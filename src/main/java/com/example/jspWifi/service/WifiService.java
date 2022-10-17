@@ -4,61 +4,94 @@ import com.example.jspWifi.domain.Wifi;
 import com.example.jspWifi.repository.WifiRepository;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class WifiService {
     private final WifiRepository wifiRepository = new WifiRepository();
 
-    public int saveAll(){
+    public int saveAll() {
+
+        int totalCount = getContentSize();
+        int saveCount = 0;
+        for (int i = 0; i < ((totalCount / 1000) + 1) * 1000; i += 1000) {
+            OkHttpClient client = new OkHttpClient();
+            int start = i;
+            int end = i + 999;
+            JSONParser parser = new JSONParser();
+            ArrayList<Wifi> wifis = new ArrayList<>();
+            String url = "http://openapi.seoul.go.kr:8088/564a63736a646f6e38396b78735254/json/TbPublicWifiInfo/" + start + "/" + end + "/";
+            Request wifiRequest = new Request.Builder()
+                    .url(url)
+                    .addHeader("Content-Type", "application/json; charset=utf-8")
+                    .build();
+            try {
+                Response wifiRespone = client.newCall(wifiRequest).execute();
+                JSONObject obj = (JSONObject) parser.parse(wifiRespone.body().string());
+                JSONObject TbPublicWifiInfo = (JSONObject) obj.get("TbPublicWifiInfo");
+                JSONArray items = (JSONArray) TbPublicWifiInfo.get("row");
+                for (int j = 0; j < items.size(); j++) {
+                    JSONObject item = (JSONObject) items.get(j);
+                    Wifi wifi = Wifi.builder()
+                            .no(item.get("X_SWIFI_MGR_NO").toString())
+                            .gu(item.get("X_SWIFI_WRDOFC").toString())
+                            .name(item.get("X_SWIFI_MAIN_NM").toString())
+                            .address1(item.get("X_SWIFI_ADRES1").toString())
+                            .address2(item.get("X_SWIFI_ADRES2").toString())
+                            .instLocation(item.get("X_SWIFI_INSTL_FLOOR").toString())
+                            .instType(item.get("X_SWIFI_INSTL_TY").toString())
+                            .instAgency(item.get("X_SWIFI_INSTL_MBY").toString())
+                            .serviceType(item.get("X_SWIFI_SVC_SE").toString())
+                            .networkType(item.get("X_SWIFI_CMCWR").toString())
+                            .instYear(item.get("X_SWIFI_CNSTC_YEAR").toString())
+                            .inOutType(item.get("X_SWIFI_INOUT_DOOR").toString())
+                            .accessType(item.get("X_SWIFI_REMARS3").toString())
+                            .lat(item.get("LAT").toString())
+                            .lnt(item.get("LNT").toString())
+                            .date(item.get("WORK_DTTM").toString())
+                            .build();
+                    wifis.add(wifi);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return saveCount;
+            }
+            saveCount += wifiRepository.saveAll(wifis);
+            wifis.clear();
+        }
+        return saveCount;
+    }
+
+    public int getContentSize() {
         OkHttpClient client = new OkHttpClient();
+        Response wifiRespone = null;
         Gson gson = new GsonBuilder().create();
         JSONParser parser = new JSONParser();
         ArrayList<Wifi> wifis = new ArrayList<>();
-        String url = "http://openapi.seoul.go.kr:8088/564a63736a646f6e38396b78735254/json/TbPublicWifiInfo/1/2/";
-        Request wifiRequest = new Request.Builder()
+        Request wifiRequest = null;
+        int totalCount = -1;
+        String url = "http://openapi.seoul.go.kr:8088/564a63736a646f6e38396b78735254/json/TbPublicWifiInfo/0/1/";
+        wifiRequest = new Request.Builder()
                 .url(url)
                 .build();
 
-        try (Response wifiRespone = client.newCall(wifiRequest).execute()){
-            JSONObject obj = (JSONObject)parser.parse(wifiRespone.body().string());
-            JSONObject TbPublicWifiInfo = (JSONObject)obj.get("TbPublicWifiInfo");
-            JSONArray items = (JSONArray)TbPublicWifiInfo.get("row");
-            int totalCount = Integer.parseInt(TbPublicWifiInfo.get("list_total_count").toString());
-
-            //totalCount / 1000 만큼 반복하면서 진행
-            for (int i = 0; i < items.size(); i++) {
-                JSONObject item = (JSONObject)items.get(i);
-                Wifi wifi = new Wifi();
-                wifi.setNo(item.get("X_SWIFI_MGR_NO").toString());
-                wifi.setGu(item.get("X_SWIFI_WRDOFC").toString());
-                wifi.setName(item.get("X_SWIFI_MAIN_NM").toString());
-                wifi.setAddress1(item.get("X_SWIFI_ADRES1").toString());
-                wifi.setAddress2(item.get("X_SWIFI_ADRES2").toString());
-                wifi.setInstLocation(item.get("X_SWIFI_INSTL_FLOOR").toString());
-                wifi.setInstType(item.get("X_SWIFI_INSTL_TY").toString());
-                wifi.setInstAgency(item.get("X_SWIFI_INSTL_MBY").toString());
-                wifi.setServiceType(item.get("X_SWIFI_SVC_SE").toString());
-                wifi.setNetworkType(item.get("X_SWIFI_CMCWR").toString());
-                wifi.setInstYear(item.get("X_SWIFI_CNSTC_YEAR").toString());
-                wifi.setInOutType(item.get("X_SWIFI_INOUT_DOOR").toString());
-                wifi.setAccessType(item.get("X_SWIFI_REMARS3").toString());
-                wifi.setLat(item.get("LAT").toString());
-                wifi.setLnt(item.get("LNT").toString());
-                wifi.setDate(item.get("WORK_DTTM").toString());
-                wifis.add(wifi);
-            }
-        }catch (Exception e) {
+        try {
+            wifiRespone = client.newCall(wifiRequest).execute();
+            JSONObject obj = (JSONObject) parser.parse(wifiRespone.body().string());
+            JSONObject TbPublicWifiInfo = (JSONObject) obj.get("TbPublicWifiInfo");
+            totalCount = Integer.parseInt(TbPublicWifiInfo.get("list_total_count").toString());
+        } catch (Exception e) {
             e.printStackTrace();
-            return 0;
+        } finally {
+            if (wifiRespone != null) {
+                wifiRespone.close();
+            }
         }
-        return wifiRepository.saveAll(wifis);
+        return totalCount;
     }
+
 }

@@ -33,7 +33,7 @@ public class WifiRepository {
                 pstmt.setString(8, wifis.get(i).getInstAgency());
                 pstmt.setString(9, wifis.get(i).getServiceType());
                 pstmt.setString(10, wifis.get(i).getNetworkType());
-                pstmt.setInt(11, Integer.parseInt(wifis.get(i).getInstYear()));
+                pstmt.setString(11, wifis.get(i).getInstYear());
                 pstmt.setString(12, wifis.get(i).getInOutType());
                 pstmt.setString(13, wifis.get(i).getAccessType());
                 pstmt.setString(14, wifis.get(i).getLat());
