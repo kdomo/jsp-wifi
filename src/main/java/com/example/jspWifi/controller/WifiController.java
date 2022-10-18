@@ -1,6 +1,7 @@
 package com.example.jspWifi.controller;
 
 import com.example.jspWifi.domain.Wifi;
+import com.example.jspWifi.domain.WifiHistory;
 import com.example.jspWifi.service.WifiService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -30,12 +31,35 @@ public class WifiController extends HttpServlet {
         String url = request.getRequestURI();
         String cmd = url.replace("/wifi", "");
 
-        if (cmd.equals("/test")) {
+        if (cmd.equals("/saveAll")) {
             WifiService wifiService = new WifiService();
             int saveCount = wifiService.saveAll();
             RequestDispatcher rd = request.getRequestDispatcher("/getComplete.jsp");
             request.setAttribute("saveCount", saveCount);
             rd.forward(request, response);
+        } else if (cmd.equals("/saveHistory")) {
+            WifiService wifiService = new WifiService();
+            String x = request.getParameter("x");
+            String y = request.getParameter("y");
+            String rs = String.valueOf(wifiService.saveHistory(x, y));
+            response.getWriter().write(rs);
+        } else if (cmd.equals("/getInfo")) {
+            WifiService wifiService = new WifiService();
+            String x = request.getParameter("x");
+            String y = request.getParameter("y");
+            ArrayList<Wifi> list = wifiService.getInfo(x, y);
+            Gson gson = new Gson();
+            response.getWriter().write(gson.toJson(list));
+        } else if (cmd.equals("/history")) {
+            WifiService wifiService = new WifiService();
+            ArrayList<WifiHistory> list = wifiService.getHistory();
+            Gson gson = new Gson();
+            response.getWriter().write(gson.toJson(list));
+        } else if (cmd.equals("/deleteHistory")) {
+            WifiService wifiService = new WifiService();
+            String id = request.getParameter("id");
+            String rs = String.valueOf(wifiService.deleteHistory(id));
+            response.getWriter().write(rs);
         }
     }
 

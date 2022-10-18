@@ -22,8 +22,8 @@ public class Wifi {
     private String instYear;            //    "X_SWIFI_CNSTC_YEAR": "2014",
     private String inOutType;            //    "X_SWIFI_INOUT_DOOR": "실내",
     private String accessType;            //    "X_SWIFI_REMARS3": "",
-    private String lat;                 //    "LAT": "126.96675",
-    private String lnt;    //    "LNT": "37.561924",
+    private String x;               //  "LNT": "37.561924",
+    private String y;           //  "LAT": "126.96675",
     private String date;    //    "WORK_DTTM": "2022-10-17 10:58:03.0"
 
 }

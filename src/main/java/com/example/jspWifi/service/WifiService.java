@@ -1,6 +1,7 @@
 package com.example.jspWifi.service;
 
 import com.example.jspWifi.domain.Wifi;
+import com.example.jspWifi.domain.WifiHistory;
 import com.example.jspWifi.repository.WifiRepository;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -50,8 +51,8 @@ public class WifiService {
                             .instYear(item.get("X_SWIFI_CNSTC_YEAR").toString())
                             .inOutType(item.get("X_SWIFI_INOUT_DOOR").toString())
                             .accessType(item.get("X_SWIFI_REMARS3").toString())
-                            .lat(item.get("LAT").toString())
-                            .lnt(item.get("LNT").toString())
+                            .x(item.get("LNT").toString()) //x
+                            .y(item.get("LAT").toString()) //y
                             .date(item.get("WORK_DTTM").toString())
                             .build();
                     wifis.add(wifi);
@@ -64,6 +65,10 @@ public class WifiService {
             wifis.clear();
         }
         return saveCount;
+    }
+
+    public int saveHistory(String x, String y) {
+        return wifiRepository.saveHistory(x, y);
     }
 
     public int getContentSize() {
@@ -94,4 +99,15 @@ public class WifiService {
         return totalCount;
     }
 
+    public ArrayList<Wifi> getInfo(String x, String y) {
+        return wifiRepository.getInfo(x, y);
+    }
+
+    public ArrayList<WifiHistory> getHistory() {
+        return wifiRepository.getHistory();
+    }
+
+    public int deleteHistory(String id) {
+        return wifiRepository.deleteHistory(id);
+    }
 }
