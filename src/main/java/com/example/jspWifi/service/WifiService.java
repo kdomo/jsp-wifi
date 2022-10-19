@@ -2,6 +2,7 @@ package com.example.jspWifi.service;
 
 import com.example.jspWifi.domain.Wifi;
 import com.example.jspWifi.domain.WifiHistory;
+import com.example.jspWifi.dto.WifiDto;
 import com.example.jspWifi.repository.WifiRepository;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -99,7 +100,7 @@ public class WifiService {
         return totalCount;
     }
 
-    public ArrayList<Wifi> getInfo(String x, String y) {
+    public ArrayList<WifiDto> getInfo(String x, String y) {
         return wifiRepository.getInfo(x, y);
     }
 

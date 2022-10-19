@@ -133,21 +133,14 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <td>ID</td>
-                            <td>X좌표</td>
-                            <td>Y좌표</td>
-                            <td>조회일자</td>
-                            <td>비고</td>
+                            <th>ID</th>
+                            <th>X좌표</th>
+                            <th>Y좌표</th>
+                            <th>조회일자</th>
+                            <th>비고</th>
                         </tr>
                     </thead>
                     <tbody id="history-body">
-                        <tr>
-                            <td>1</td>
-                            <td>37.2680521</td>
-                            <td>127.0301429</td>
-                            <td>2022-10-18 14:21:41</td>
-                            <td><button type="button" class="btn btn-primary btn-sm">삭제</button></td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -210,11 +203,10 @@
                     for (let i = 0; i < result.length; i++) {
                         let list;
                         list = '<tr>';
-
-                        list += '<td>' + result[i].id +'<td>';
-                        list += '<td>' + result[i].x +'<td>';
-                        list += '<td>' + result[i].y +'<td>';
-                        list += '<td>' + result[i].date +'<td>';
+                        list += '<td>' + result[i].id +'</td>';
+                        list += '<td>' + result[i].x +'</td>';
+                        list += '<td>' + result[i].y +'</td>';
+                        list += '<td>' + result[i].date +'</td>';
                         list += '<td><button type="button" class="btn btn-primary btn-sm" value="'+ result[i].id+'" onclick="historyDelete(' + result[i].id +')">삭제</button></td>';
                         list += '</tr>';
                         $('#history-body').append(list);
@@ -292,12 +284,13 @@
                         data: {"x":x , "y":y},
                         dataType: "json",
                         success: function(result) {
+                            console.log(result);
                             $('#wifi-body').html('');
                             if (result.length > 1) {
                                 for (let i = 0; i < result.length; i++) {
                                     let list;
                                     list = '<tr>';
-                                    list += '<td>test</td>';
+                                    list += '<td>' + (result[i].distance).substring(0,6) + '</td>';
                                     list += '<td>'+ result[i].no +'</td>';
                                     list += '<td>'+ result[i].gu +'</td>';
                                     list += '<td>'+ result[i].name +'</td>';

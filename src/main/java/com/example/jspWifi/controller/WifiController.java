@@ -2,6 +2,7 @@ package com.example.jspWifi.controller;
 
 import com.example.jspWifi.domain.Wifi;
 import com.example.jspWifi.domain.WifiHistory;
+import com.example.jspWifi.dto.WifiDto;
 import com.example.jspWifi.service.WifiService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -47,7 +48,7 @@ public class WifiController extends HttpServlet {
             WifiService wifiService = new WifiService();
             String x = request.getParameter("x");
             String y = request.getParameter("y");
-            ArrayList<Wifi> list = wifiService.getInfo(x, y);
+            ArrayList<WifiDto> list = wifiService.getInfo(x, y);
             Gson gson = new Gson();
             response.getWriter().write(gson.toJson(list));
         } else if (cmd.equals("/history")) {

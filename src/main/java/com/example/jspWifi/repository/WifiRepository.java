@@ -2,6 +2,7 @@ package com.example.jspWifi.repository;
 
 import com.example.jspWifi.domain.Wifi;
 import com.example.jspWifi.domain.WifiHistory;
+import com.example.jspWifi.dto.WifiDto;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -81,13 +82,13 @@ public class WifiRepository {
         return result;
     }
 
-    public ArrayList<Wifi> getInfo(String x, String y) {
-        ArrayList<Wifi> list = new ArrayList<>();
+    public ArrayList<WifiDto> getInfo(String x, String y) {
+        ArrayList<WifiDto> list = new ArrayList<>();
         try {
             Class.forName("com.mysql.jdbc.Driver");
             String sql = "SELECT * " +
                     "FROM ( " +
-                    "SELECT *,( 6371 * acos( cos( radians(?) ) * cos( radians( x) ) * cos( radians( y ) - radians(?) ) + sin( radians(?) ) * sin( radians(x) ) ) ) AS distance " +
+                    "SELECT *, ( 6371 * acos( cos( radians(?) ) * cos( radians( x) ) * cos( radians( y ) - radians(?) ) + sin( radians(?) ) * sin( radians(x) ) ) ) AS distance " +
                     "FROM wifi " +
                     ") DATA " +
                     "WHERE DATA.distance < 3 " +
@@ -100,7 +101,7 @@ public class WifiRepository {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                list.add(Wifi.builder()
+                list.add(WifiDto.builder()
                         .no(rs.getString("no"))
                         .gu(rs.getString("gu"))
                         .name(rs.getString("name"))
@@ -117,6 +118,7 @@ public class WifiRepository {
                         .x(rs.getString("x"))
                         .y(rs.getString("y"))
                         .date(rs.getString("date"))
+                        .distance(String.valueOf(rs.getDouble("distance")))
                         .build());
             }
 
@@ -131,7 +133,7 @@ public class WifiRepository {
         ArrayList<WifiHistory> list = new ArrayList<>();
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            String sql = "select * from wifi_history where is_del = 'N'";
+            String sql = "select * from wifi_history where is_del = 'N' order by id desc";
             con = DriverManager.getConnection(url, userId, userPw);
             pstmt = con.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
